@@ -2,11 +2,23 @@
 
 #include <stdexcept>
 #include "dataset.hpp"
-#include <fstream>
-#include <sstream>
+#include "csv.hpp"
 
 void QuakeDataset::loadData(const std::string& filename) {
-    // Pass
+    // Generate reader for data file
+    csv::CSVReader reader(filename);
+    // Iterate through data file
+    for (auto& row : reader){
+        // Temprorarily store each value from row
+        std::string time = row["time"].get<std::string>();
+        double latitude = row["latitude"].get<double>();
+        double longitude = row["longitude"].get<double>();
+        double depth = row["depth"].get<double>();
+        double magnitude = row["mag"].get<double>();
+            
+        // Add values from row as Quake entry into data vector
+        data.emplace_back(time, latitude, longitude, depth, magnitude);
+    }
 }
 
 Quake QuakeDataset::operator[](int index) const {
