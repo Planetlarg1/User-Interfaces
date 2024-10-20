@@ -8,8 +8,15 @@
 class QuakeDataset
 {
   public:
-    // Specify prototypes or inlined methods here
-    // (see UML diagram for what is required)
+    QuakeDataset() = default;
+    QuakeDataset(const std::string& filename) { loadData(filename); }
+    void loadData(const std::string& filename);
+    int size() const { return data.size(); }
+    Quake operator[](int index) const;
+    Quake strongest() const;
+    Quake shallowest() const;
+    double meanDepth() const;
+    double meanMagnitude() const;
 
   private:
     std::vector<Quake> data;
