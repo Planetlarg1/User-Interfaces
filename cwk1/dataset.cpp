@@ -22,24 +22,85 @@ void QuakeDataset::loadData(const std::string& filename) {
 }
 
 Quake QuakeDataset::operator[](int index) const {
+    // Check if indexing is within size of dataset
     if (index < 0 || index >= size()) {
-        throw std::out_of_range("Index out of range");
+        throw std::out_of_range("Indexing error: Index out of range");
     }
     return data[index];
 }
 
 Quake QuakeDataset::strongest() const {
-    return Quake("2024-01-01T00:00:00Z", 0.0, 0.0, 0.0, 0.0);
+    // Check if dataset exists
+    if (data.empty()) {
+        throw std::runtime_error("Invalid dataset: Cannot return strongest quake in an empty dataset");
+    }
+
+    size_t maxIndex = 0;
+    double currentMag;
+    double maxMag = data[0].getMagnitude();
+
+    // Iterate through, comparing for highest magnitude
+    for (size_t i=1; i<data.size(); i++) {
+        currentMag = data[i].getMagnitude();
+        if (currentMag > maxMag) {
+            maxIndex = i;
+            maxMag = currentMag;
+        }
+    }
+    return data[maxIndex];
 }
 
 Quake QuakeDataset::shallowest() const {
-    return Quake("2024-01-01T00:00:00Z", 0.0, 0.0, 0.0, 0.0);
+    // Check if dataset exists
+    if (data.empty()) {
+        throw std::runtime_error("Invalid dataset: Cannot return shallowest quake in an empty dataset");
+    }
+
+    size_t minIndex = 0;
+    double currentDepth;
+    double minDepth = data[0].getDepth();
+
+    // Iterate through, comparing for lowest depth
+    for (size_t i=1; i<data.size(); i++) {
+        currentDepth = data[i].getDepth();
+        if (currentDepth < minDepth) {
+            minIndex = i;
+            minDepth = currentDepth;
+        }
+    }
+    return data[minIndex];
 }
 
 double QuakeDataset::meanDepth() const {
-    return 0.0;
+    // Check if dataset exists
+    if (data.empty()) {
+        throw std::runtime_error("Invalid dataset: Cannot return mean depth in an empty dataset");
+    }
+
+    double totalDepth = 0;
+
+    // Calculate total depth
+    for (const auto& quake : data) {
+        totalDepth += quake.getDepth();
+    }
+
+    // Mean = sum / size
+    return totalDepth / data.size();
 }
 
 double QuakeDataset::meanMagnitude() const {
-    return 0.0;
+    // Check if dataset exists
+    if (data.empty()) {
+        throw std::runtime_error("Invalid dataset: Cannot return mean magnitude in an empty dataset");
+    }
+
+    double totalMag = 0;
+
+    // Calculate total depth
+    for (const auto& quake : data) {
+        totalMag += quake.getMagnitude();
+    }
+
+    // Mean = sum / size
+    return totalMag / data.size();
 }
